@@ -1,0 +1,32 @@
+name: Build LaTeX document
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install TeXLive
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra bibtex
+
+    - name: Build .tex file
+      run: |
+        pdflatex main.tex
+        bibtex main.aux
+        pdflatex main.tex
+        pdflatex main.tex
+
+    - name: Upload PDF
+      uses: actions/upload-artifact@v2
+      with:
+        name: document-pdf
+        path: main.pdf
